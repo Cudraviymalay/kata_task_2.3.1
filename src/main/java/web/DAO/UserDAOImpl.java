@@ -5,7 +5,6 @@ import web.models.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,28 +37,23 @@ public class UserDAOImpl implements UserDAO {
         return userList;
     }
 
-    @Transactional
-    @Override
-    public void add(User user) {
-        entityManager.persist(user);
-    }
-
-    @Transactional
-    @Override
-    public void deleteById(int id) {
-        User user = entityManager.find(User.class, id);
-        if (user != null) {
-            entityManager.remove(user);
-        }
-    }
-
-    @Transactional
-    public User edit(User user) {
-        return entityManager.merge(user);
-    }
-
     public void save(User user) {
         user.setId(++USERS_COUNT);
         userList.add(user);
+    }
+
+    public void update(int id, User updatedUser) {
+        User userToUpdated = userById(id);
+        userToUpdated.setName(updatedUser.getName());
+        userToUpdated.setSurname(updatedUser.getSurname());
+        userToUpdated.setAge(updatedUser.getAge());
+    }
+
+    public User userById(int id) {
+        return userList.stream().filter(user -> user.getId() == id).findAny().orElse(null);
+    }
+
+    public void delete(int id) {
+        userList.removeIf(user -> user.getId() == id);
     }
 }

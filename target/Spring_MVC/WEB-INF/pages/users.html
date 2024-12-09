@@ -1,45 +1,20 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Users List</title>
-    <style>
-        table {
-            width: 50%;
-            margin: 20px auto;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f4f4f4;
-        }
-    </style>
+    <title>All Users</title>
 </head>
 <body>
-<h1 style="text-align: center;">Users List</h1>
-<table>
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Name</th>
-        <th>Surname</th>
-        <th>Age</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="users, stat : ${users}">
-        <td th:text="${users.id}"></td>
-        <td th:text="${users.name}"></td>
-        <td th:text="${users.surname}"></td>
-        <td th:text="${users.age}"></td>
-    </tr>
-    </tbody>
-</table>
+<div th:each="user : ${users}">
+    <a th:href="@{/users/{id}(id=${user.getId()})}"
+       th:text="${user.getName() + ' ' + user.getSurname() + ', ' + user.getAge() + ' years'}">
+    </a>
+</div>
+
+<br/>
+<hr/>
+
+<a href="users/new">Create New User</a>
+
 </body>
 </html>
