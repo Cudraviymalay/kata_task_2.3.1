@@ -11,13 +11,13 @@ public class User {
     @Column(name = "id")
     private int id;
 
-    @Column
+    @Column(name = "name")
     private String name;
 
-    @Column
+    @Column(name = "surname")
     private String surname;
 
-    @Column
+    @Column(name = "age")
     private int age;
 
     public User() {

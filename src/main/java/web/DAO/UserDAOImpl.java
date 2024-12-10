@@ -5,7 +5,7 @@ import web.models.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Component
@@ -14,46 +14,42 @@ public class UserDAOImpl implements UserDAO {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private static int USERS_COUNT;
-    private List<User> userList;
-
-    public UserDAOImpl() {
-        this.userList = new ArrayList<>();
-
-        userList.add(new User(++USERS_COUNT, "Vova", "Pavlov", 33));
-        userList.add(new User(++USERS_COUNT, "Petya", "Sidorod", 21));
-        userList.add(new User(++USERS_COUNT, "Kolya", "Vasin", 18));
-        userList.add(new User(++USERS_COUNT, "Sasha", "Morozova", 19));
-        userList.add(new User(++USERS_COUNT, "Masha", "Makarova", 22));
-
-    }
-
-    public UserDAOImpl(List<User> userList) {
-        this.userList = userList;
+    @Override
+    @Transactional
+    public List<User> getAllUsers() {
+        return entityManager.createQuery("FROM User", User.class).getResultList();
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userList;
-    }
-
+    @Transactional
     public void save(User user) {
-        user.setId(++USERS_COUNT);
-        userList.add(user);
+        entityManager.persist(user);
     }
 
+    @Override
+    @Transactional
     public void update(int id, User updatedUser) {
-        User userToUpdated = userById(id);
-        userToUpdated.setName(updatedUser.getName());
-        userToUpdated.setSurname(updatedUser.getSurname());
-        userToUpdated.setAge(updatedUser.getAge());
+        User userToUpdate = entityManager.find(User.class, id);
+        if (userToUpdate != null) {
+            userToUpdate.setName(updatedUser.getName());
+            userToUpdate.setSurname(updatedUser.getSurname());
+            userToUpdate.setAge(updatedUser.getAge());
+            entityManager.merge(userToUpdate);
+        }
     }
 
+    @Override
+    @Transactional
     public User userById(int id) {
-        return userList.stream().filter(user -> user.getId() == id).findAny().orElse(null);
+        return entityManager.find(User.class, id);
     }
 
+    @Override
+    @Transactional
     public void delete(int id) {
-        userList.removeIf(user -> user.getId() == id);
+        User userToDelete = entityManager.find(User.class, id);
+        if (userToDelete != null) {
+            entityManager.remove(userToDelete);
+        }
     }
 }
