@@ -22,8 +22,8 @@ public class UsersController {
         return "users";
     }
 
-    @GetMapping("/{id}")
-    public String userById(@PathVariable("id") int id, Model model) {
+    @GetMapping("/user")
+    public String userById(@RequestParam("id") int id, Model model) {
         model.addAttribute("user", userDAO.userById(id));
         return "userbyid";
     }
@@ -50,20 +50,20 @@ public class UsersController {
         return "redirect:/users";
     }
 
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") int id) {
+    @GetMapping("/edit")
+    public String edit(Model model, @RequestParam("id") int id) {
         model.addAttribute("user", userDAO.userById(id));
         return "edit";
     }
 
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user, @PathVariable("id") int id) {
+    @PostMapping("/update")
+    public String update(@ModelAttribute("user") User user, @RequestParam("id") int id) {
         userDAO.update(id, user);
         return "redirect:/users";
     }
 
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") int id) {
+    @PostMapping("/delete")
+    public String delete(@RequestParam("id") int id) {
         userDAO.delete(id);
         return "redirect:/users";
     }
