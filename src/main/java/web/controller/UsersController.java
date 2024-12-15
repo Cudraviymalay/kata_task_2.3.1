@@ -3,28 +3,28 @@ package web.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import web.DAO.UserDAO;
 import web.models.User;
+import web.service.UserService;
 
 @Controller
 @RequestMapping("/users")
 public class UsersController {
 
-    private final UserDAO userDAO;
+    private final UserService userService;
 
-    public UsersController(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public UsersController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping()
     public String getUsers(Model model) {
-        model.addAttribute("users", userDAO.getAllUsers());
+        model.addAttribute("users", userService.getAllUsers());
         return "users";
     }
 
     @GetMapping("/user")
     public String userById(@RequestParam("id") int id, Model model) {
-        model.addAttribute("user", userDAO.userById(id));
+        model.addAttribute("user", userService.userById(id));
         return "userbyid";
     }
 
@@ -35,36 +35,27 @@ public class UsersController {
     }
 
     @PostMapping()
-    public String addUser(@RequestParam("name") String name,
-                          @RequestParam("surname") String surname,
-                          @RequestParam("age") int age,
-                          Model model) {
-        User user = new User();
-        user.setName(name);
-        user.setSurname(surname);
-        user.setAge(age);
+    public String addUser(@ModelAttribute User user, Model model) {
         model.addAttribute("user", user);
-
-        userDAO.save(user);
-
+        userService.save(user);
         return "redirect:/users";
     }
 
     @GetMapping("/edit")
     public String edit(Model model, @RequestParam("id") int id) {
-        model.addAttribute("user", userDAO.userById(id));
+        model.addAttribute("user", userService.userById(id));
         return "edit";
     }
 
     @PostMapping("/update")
     public String update(@ModelAttribute("user") User user, @RequestParam("id") int id) {
-        userDAO.update(id, user);
+        userService.update(id, user);
         return "redirect:/users";
     }
 
     @PostMapping("/delete")
     public String delete(@RequestParam("id") int id) {
-        userDAO.delete(id);
+        userService.delete(id);
         return "redirect:/users";
     }
 }
